@@ -4,6 +4,8 @@
   "description": "n/a",
   "main": "index.js",
   "scripts": {
+    "prepublishOnly": "npm run test -s",
+    "postpublish": "git push",
     "test": "ava -s --verbose"
   },
   "ava": {
