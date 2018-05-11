@@ -62,14 +62,14 @@ attachCommandMethods = (app, service, basePath, hookGroups)->
 
 		params ||= {}
 		params.query ?= {}
-		context = {app, service, params, method:methodName, type:'before'}
+		context = {app, service, params, data, method:methodName, path:basePath, type:'before'}
 		returnContext = arguments[arguments.length-1] is 0
 
 		Promise.resolve()
 			.then ()-> runHooks(service, hookGroups.before, context)
 			.then ()->
 				return context if context.result?
-				Promise.resolve(methodFn(data, context.params, context))
+				Promise.resolve(methodFn(context.data, context.params, context))
 					.then (result)-> context.result = result
 					.then ()-> return context
 

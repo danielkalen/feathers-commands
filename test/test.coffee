@@ -14,6 +14,8 @@ test "registration", (t)->
 	createService '2'
 	t.is typeof app.service('2').command, 'function'
 	t.is typeof app.service('2').run, 'function'
+	
+	createService '3'
 
 
 test "create commands", (t)->
@@ -55,4 +57,30 @@ test "command path params", (t)->
 			t.is status, 200
 			t.is body.name, 'daniel'
 			t.is body.field, 'king'
+
+
+test "hooks (all)", (t)->
+	app.service('2').command 'command4', (data)-> Promise.resolve(data)
+	app.service('2').hooks before: all: ({data})->
+		data.count ?= 0
+		data.count++
+		return
+	
+	data = {abc:123}
+	Promise.resolve()
+		.then ()-> app.service('2').run 'command4', data
+		.then (result)->
+			t.is data, result
+			t.is data.count, 1
+
+test "hooks context", (t)->
+	app.service('2').command 'command5/:_id', (data, params)-> Promise.resolve(params.context)
+	app.service('2').hooks before: all: (context)-> context.params.context = context; return
+	
+	Promise.resolve()
+		.then ()-> app.service('2').run 'command5'
+		.then (result)->
+			t.true result?
+			t.is result.path, '2'
+			t.is result.method, 'command5'
 
