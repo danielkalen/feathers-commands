@@ -1,7 +1,7 @@
 {
   "name": "feathers-commands",
   "version": "0.0.1",
-  "description": "n/a",
+  "description": "Create custom commands/routes for services beyond the 6 basic methods provided by FeathersJS",
   "main": "index.js",
   "scripts": {
     "prepublishOnly": "npm run test -s",
@@ -26,6 +26,10 @@
     "url": "https://github.com/danielkalen/feathers-commands/issues"
   },
   "homepage": "https://github.com/danielkalen/feathers-commands#readme",
+  "keywords": [
+    "feathers",
+    "feathers-plugin"
+  ],
   "dependencies": {
     "@feathersjs/commons": "^1.4.1",
     "@feathersjs/errors": "^3.3.0",
