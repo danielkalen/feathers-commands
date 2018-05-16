@@ -74,13 +74,20 @@ test "hooks (all)", (t)->
 			t.is data.count, 1
 
 test "hooks context", (t)->
-	app.service('2').command 'command5/:_id', (data, params)-> Promise.resolve(params.context)
-	app.service('2').hooks before: all: (context)-> context.params.context = context; return
+	app.service('3').command 'command5/:_id', (data, params)-> Promise.resolve(params.context)
+	app.service('3').hooks before: all: (context)-> context.params.context = context; return
 	
 	Promise.resolve()
-		.then ()-> app.service('2').run 'command5'
+		.then ()-> app.service('3').run 'command5'
 		.then (result)->
 			t.true result?
-			t.is result.path, '2'
+			t.is result.path, '3'
 			t.is result.method, 'command5'
+
+
+
+
+
+
+
 
