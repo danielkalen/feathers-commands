@@ -73,16 +73,40 @@ test "hooks (all)", (t)->
 			t.is data, result
 			t.is data.count, 1
 
+
+test "hooks (specific command)", (t)->
+	app.service('2').command 'command5', (data)-> Promise.resolve(data)
+	app.service('2').hooks
+		before: command5: ({data})->
+			data.history = []
+			data.history.push 'before'
+			return
+		after: command5: [({data})->
+			data.history.push 'after'
+			return
+		]
+		finally: command5: ({data})->
+			data.history.push 'finally'
+			return
+	
+	data = {abc:123}
+	Promise.resolve()
+		.then ()-> app.service('2').run 'command5', data
+		.then (result)->
+			t.is data, result
+			t.deepEqual data.history, ['before', 'after', 'finally']
+
+
 test "hooks context", (t)->
-	app.service('3').command 'command5/:_id', (data, params)-> Promise.resolve(params.context)
+	app.service('3').command 'command6/:_id', (data, params)-> Promise.resolve(params.context)
 	app.service('3').hooks before: all: (context)-> context.params.context = context; return
 	
 	Promise.resolve()
-		.then ()-> app.service('3').run 'command5'
+		.then ()-> app.service('3').run 'command6'
 		.then (result)->
 			t.true result?
 			t.is result.path, '3'
-			t.is result.method, 'command5'
+			t.is result.method, 'command6'
 
 
 

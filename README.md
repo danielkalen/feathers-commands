@@ -47,7 +47,21 @@ POST /myService/getStatus => 404 NOT FOUND
 ```
 
 ##### Hooks
-Hooks will be run `before`,`after`,`error`,`finally` for commands, but currently hooks cannot be registered individually for each command and only the hooks defined in `all` will be executed for the command.
+Hooks will be invoked for custom commands just like they do for the [6 native methods](https://docs.feathersjs.com/guides/basics/rest.html#rest-and-services)
+```js
+app.service('myService').hooks({
+    before: {
+        all: ()=> console.log('all hook')
+        getStatus: [
+            ()=> console.log('1st specific hook')
+            ()=> console.log('2nd specific hook')
+        ]
+    },
+    after: {
+        sayHello: ()=> console.log('3rd specific hook')
+    }
+})
+```
 
 ##### `this` context
 Commands will be invoked under the service context, meaning that `this` refers to the feathers-wrapped service object.
