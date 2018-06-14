@@ -75,26 +75,27 @@ test "hooks (all)", (t)->
 
 
 test "hooks (specific command)", (t)->
+	markHistory = (label)-> ({data})->
+		data.history ?= []
+		data.history.push label
+		return
+	
 	app.service('2').command 'command5', (data)-> Promise.resolve(data)
 	app.service('2').hooks
-		before: command5: ({data})->
-			data.history = []
-			data.history.push 'before'
-			return
-		after: command5: [({data})->
-			data.history.push 'after'
-			return
-		]
-		finally: command5: ({data})->
-			data.history.push 'finally'
-			return
+		before:
+			all: markHistory('all')
+			command5: markHistory('before')
+		after:
+			command5: markHistory('after')
+		finally:
+			command5: markHistory('finally')
 	
 	data = {abc:123}
 	Promise.resolve()
 		.then ()-> app.service('2').run 'command5', data
 		.then (result)->
 			t.is data, result
-			t.deepEqual data.history, ['before', 'after', 'finally']
+			t.deepEqual data.history, ['all', 'before', 'after', 'finally']
 
 
 test "hooks context", (t)->

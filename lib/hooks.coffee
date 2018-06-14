@@ -17,19 +17,24 @@ patchHooksMethod = (service)->
 	
 	service.hooks = (newHooks)->
 		for group,value of newHooks
-			if typeof value is 'function'
+			if typeof value is 'function' # all-hook function
 				service.__hooks[group].all.push(value)
-			else if value.all
-				service.__hooks[group].all.push([].concat(value.all)...)
-			else
-				commandMethods = Object.keys(value).filter (method)->
-					not NATIVE_METHODS.includes(method)
 
-				for method in commandMethods
-					hooks = value[method]
-					service.__hooks[group][method] ?= []
-					service.__hooks[group][method].push [].concat(hooks)...
-					delete value[method]
+			else
+				methods = Object.keys(value)
+
+				for method in methods then switch
+					when method is 'all'
+						service.__hooks[group].all.push([].concat(value.all)...)
+
+					when NATIVE_METHODS.includes(method) # get, find, create, etc.
+						;
+
+					else # command hooks
+						hooks = value[method]
+						service.__hooks[group][method] ?= []
+						service.__hooks[group][method].push [].concat(hooks)...
+						delete value[method]
 
 		orig.call(service, newHooks)
 
