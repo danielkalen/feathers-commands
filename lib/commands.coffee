@@ -52,12 +52,16 @@ attachCommandMethods = (app, service, basePath, hookGroups)->
 					.then ()-> runHooks(service, 'error', context)
 					.then ()-> return context
 			
-			.then runFinallyHooks(context), runFinallyHooks(context)
+			.then runFinallyHooks(context), runFinallyHooks(context, true)
 
-	runFinallyHooks = (context)-> (result)->
+	runFinallyHooks = (context, isErrorHandler)-> (result)->
 		Promise.resolve()
 			.then ()-> runHooks(service, 'finally', context)
-			.then ()-> return result
+			.then ()->
+				if isErrorHandler
+					throw result
+				else
+					return result
 
 
 
