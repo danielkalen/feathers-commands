@@ -1,4 +1,5 @@
 extend = require 'smart-extend'
+errors = require '@feathersjs/errors'
 {runHooks} = require './hooks'
 
 
